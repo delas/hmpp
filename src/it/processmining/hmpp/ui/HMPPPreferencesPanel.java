@@ -17,7 +17,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -26,10 +25,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.JTextField;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -40,11 +36,9 @@ import org.deckfour.slickerbox.components.GradientPanel;
 import org.deckfour.slickerbox.components.HeaderBar;
 import org.deckfour.slickerbox.components.RoundedPanel;
 import org.deckfour.slickerbox.ui.SlickerCheckBoxUI;
-import org.deckfour.slickerbox.ui.SlickerSliderUI;
 import org.processmining.framework.log.LogReader;
 import org.processmining.framework.ui.MainUI;
 import org.processmining.framework.ui.WaitDialog;
-import org.processmining.framework.ui.slicker.ProgressPanel;
 
 
 /**

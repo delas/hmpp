@@ -5,9 +5,15 @@ import it.processmining.hmpp.models.HMPPParameters;
 import it.processmining.hmpp.ui.HMPPPreferencesPanel;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import javax.swing.JPanel;
+
 import org.processmining.framework.log.AuditTrailEntry;
 import org.processmining.framework.log.AuditTrailEntryList;
 import org.processmining.framework.log.LogEvent;
@@ -17,13 +23,11 @@ import org.processmining.framework.log.LogSummary;
 import org.processmining.framework.log.ProcessInstance;
 import org.processmining.framework.models.heuristics.HNSet;
 import org.processmining.framework.models.heuristics.HNSubSet;
-import org.processmining.framework.ui.MainUI;
-import org.processmining.framework.ui.MiningSettings;
-import org.processmining.framework.ui.SwingWorker;
 import org.processmining.framework.util.PluginDocumentationLoader;
 import org.processmining.mining.MiningPlugin;
 import org.processmining.mining.MiningResult;
 import org.processmining.mining.geneticmining.fitness.duplicates.DTContinuousSemanticsFitness;
+
 import cern.colt.matrix.DoubleFactory1D;
 import cern.colt.matrix.DoubleFactory2D;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -258,6 +262,7 @@ public class HMPP implements MiningPlugin {
 	 * @param log
 	 * @param causalityFall
 	 */
+	@SuppressWarnings("unchecked")
 	public void makeBasicRelations(LogReader log, double causalityFall) {	
 		/* Iterate through all log events */
 		Iterator<ProcessInstance> it = log.instanceIterator();
@@ -382,7 +387,7 @@ public class HMPP implements MiningPlugin {
 			}
 		}
 		
-		Double[] a = (Double[]) temp.toArray(new Double[temp.size()]);
+		Double[] a = temp.toArray(new Double[temp.size()]);
 		Arrays.sort(a);
 		String[] toret = new String[a.length];
 		for (int i = 0; i < a.length; i++) {
@@ -473,6 +478,7 @@ public class HMPP implements MiningPlugin {
 	 * 
 	 * @param atel the process instance's activities
 	 */
+	@SuppressWarnings("unchecked")
 	private void calculateEventsFrequencies(AuditTrailEntryList atel) {
 
 		HashMap<String, Integer> finishedActivities = new HashMap<String, Integer>();
