@@ -2,5 +2,12 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="libs/colt.jar"/>
+	<classpathentry kind="lib" path="libs/ProM.jar"/>
+	<classpathentry kind="lib" path="libs/ProMmodels.jar"/>
+	<classpathentry kind="lib" path="libs/att.jar"/>
+	<classpathentry kind="lib" path="libs/slickerbox0.5.jar"/>
+	<classpathentry kind="lib" path="libs/GantzGraf-0.9.jar"/>
+	<classpathentry kind="lib" path="libs/ProMplugins.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
