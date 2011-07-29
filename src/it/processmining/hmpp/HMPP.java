@@ -38,7 +38,7 @@ import cern.colt.matrix.DoubleMatrix2D;
  * This is the main class for the HeuristicsMiner++ Algorithm
  * 
  * @author Andrea Burattin
- * @version 0.1
+ * @version 0.2
  */
 public class HMPP implements MiningPlugin {
 
@@ -206,6 +206,11 @@ public class HMPP implements MiningPlugin {
 	 */
 	protected HMPPParameters getParameters() {
 		return parameters;
+	}
+	
+	
+	public void setParameters(HMPPParameters parameters) {
+		this.parameters = parameters;
 	}
 	
 	
@@ -640,7 +645,7 @@ public class HMPP implements MiningPlugin {
 	 * @param log the current log
 	 * @return the heuristics net from the log
 	 */
-	protected HMPPHeuristicsNet makeHeuristicsRelations(LogReader log) {
+	public HMPPHeuristicsNet makeHeuristicsRelations(LogReader log) {
 		
 		/* Step 0 =========================================================== */
 		/* Data initialization */

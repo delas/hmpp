@@ -1,27 +1,39 @@
 package it.processmining.hmpp.ui;
 
 import it.processmining.hmpp.HMPP;
+import it.processmining.hmpp.models.HMPPHeuristicsNet;
 import it.processmining.hmpp.models.HMPPParameters;
 import it.processmining.hmpp.ui.widget.HMPPHistogram;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -35,8 +47,12 @@ import org.deckfour.slickerbox.components.FlatTabbedPane;
 import org.deckfour.slickerbox.components.GradientPanel;
 import org.deckfour.slickerbox.components.HeaderBar;
 import org.deckfour.slickerbox.components.RoundedPanel;
+import org.deckfour.slickerbox.components.SlickerButton;
 import org.deckfour.slickerbox.ui.SlickerCheckBoxUI;
+import org.processmining.exporting.heuristicsNet.HnExport;
 import org.processmining.framework.log.LogReader;
+import org.processmining.framework.models.heuristics.HeuristicsNet;
+import org.processmining.framework.plugin.ProvidedObject;
 import org.processmining.framework.ui.MainUI;
 import org.processmining.framework.ui.WaitDialog;
 
@@ -67,6 +83,7 @@ public class HMPPPreferencesPanel extends JPanel
 	JTextField andThresholdText;
 	JCheckBox useAllConnectedHeuristics;
 	JCheckBox useLongDistanceDependency;
+	JButton exportAllThePossibleNetwork;
 	
 	JList relativeToBestList;
 	HMPPHistogram positiveObsHisto;
@@ -152,6 +169,96 @@ public class HMPPPreferencesPanel extends JPanel
 		andThresholdText = buildTextField();
 		useAllConnectedHeuristics = new JCheckBox();
 		useLongDistanceDependency = new JCheckBox();
+		exportAllThePossibleNetwork = new SlickerButton("Export processes");
+		exportAllThePossibleNetwork.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (!algorithm.getBasicRelationsMade()) {
+					algorithm.makeBasicRelations(log, 0.8);
+				}
+				
+				final Thread saverThread = new Thread() {
+					public void run() {
+						// select destination directory
+						JFileChooser fc = new JFileChooser();
+						fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+						if(fc.showSaveDialog(HMPPPreferencesPanel.this) != JFileChooser.APPROVE_OPTION){
+							return;
+						}
+						String saveDir = fc.getSelectedFile().getAbsolutePath();
+						
+						// export all the possible DIFFERENT processes
+						HashSet<HeuristicsNet> processes = new HashSet<HeuristicsNet>();
+						String[] relativeToBest = algorithm.getRelativeToBestValues();
+						Set<Double> positiveObs = algorithm.getPositiveObsThresholdsValues().keySet();
+						Set<Double> depThreshold = algorithm.getDependencyThresholdValues().keySet();
+						
+						WaitDialog dialog = new WaitDialog(MainUI.getInstance(), "Exporting net...", "Please wait, \nexporting net models...");
+						dialog.setVisible(true);
+						
+						FileOutputStream os;
+						HnExport export = new HnExport();
+						
+						StringBuilder CSV = new StringBuilder("ID;Relative to best;Positive observation;Dependency thr;\n");
+						
+						// iterate through all parameter configuration
+						int i = 0;
+						for (String rtb : relativeToBest) {
+							for (Double po : positiveObs) {
+								for (Double dt : depThreshold) {
+		
+									// prepare the configuration
+									HMPPParameters para = new HMPPParameters();
+									para.setRelativeToBestThreshold(Double.parseDouble(rtb));
+									para.setPositiveObservationsThreshold(po.intValue());
+									para.setDependencyThreshold(dt);
+									algorithm.setParameters(para);
+									HMPPHeuristicsNet net = algorithm.makeHeuristicsRelations(log);
+									
+									if (!processes.contains(net)) {
+										processes.add(net);
+										
+										CSV.append(""+ i +";"+ rtb +";"+ po.intValue() +";"+ dt +"\n");
+										
+										// build the network and save it to the file
+										try {
+											os = new FileOutputStream(saveDir + File.separator + i + ".hn");
+											export.export(new ProvidedObject("HeuristicsNet", net), os);
+										} catch (FileNotFoundException ex) {
+											ex.printStackTrace();
+										} catch (IOException ex) {
+											ex.printStackTrace();
+										}
+									}
+									
+									i++;
+									
+								}
+							}
+						}
+						
+						// write the information file
+						try {
+							os = new FileOutputStream(saveDir + File.separator + "info.csv");
+							FileWriter fw = new FileWriter(saveDir + File.separator + "info.csv");
+							fw.write(CSV.toString());
+						} catch (FileNotFoundException ex) {
+							ex.printStackTrace();
+						} catch (IOException ex) {
+							ex.printStackTrace();
+						}
+						
+						dialog.setVisible(false);
+					}
+				};
+				
+				saverThread.start();
+				
+				
+				
+			}
+		});
 		
 		relativeToBestThresholdText.addFocusListener(this);
 		positiveObservationsThresholdText.addFocusListener(this);
@@ -323,6 +430,16 @@ public class HMPPPreferencesPanel extends JPanel
 		configurationPanel.add(dependencyThrHistoContainer);
 		
 		
+		/* export panel */
+		JPanel exportNetworkPanel = new JPanel();
+		exportNetworkPanel.setOpaque(false);
+		exportNetworkPanel.setBorder(BorderFactory.
+				createEmptyBorder(10, 10, 10, 10));
+		exportNetworkPanel.setLayout(new BoxLayout(exportNetworkPanel,
+				BoxLayout.PAGE_AXIS));
+		exportNetworkPanel.add(exportAllThePossibleNetwork);
+		
+		
 		
 		/* overall window */
 		GradientPanel back = new GradientPanel(new Color(80, 80, 80), 
@@ -334,6 +451,7 @@ public class HMPPPreferencesPanel extends JPanel
 				new Color(220, 220, 220, 180));
 		tabs.addTab("Parameters setup guidance", configurationPanel);
 		tabs.addTab("Parameter details", parametersPanel);
+		tabs.addTab("Export processes", exportNetworkPanel);
 		back.add(tabs, BorderLayout.CENTER);
 		HeaderBar header = new HeaderBar("HeuristicsMiner++");
 		header.setHeight(40);
