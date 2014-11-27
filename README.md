@@ -13,9 +13,9 @@ To install this plugin the following steps are required:
 3. replace the file `lib/framework/ProM.jar` with the one contained in the downloaded zip file (a small modification to the framework was required in order to run the plugin);
 4. add, at the end of the file mining.ini (in the root directory of the current ProM installation), a line with:
 ```ini
-    B5=it.processmining.hmpp.HMPP
+B5=it.processmining.hmpp.HMPP
 ```
-5. now the plugin should be installed.
+Now the plugin should be installed!
 
 **Important:** please consider that this plugin is just a proof-of-concept with some limitations. For example, the plugin expects that all the activities contains a start and complete events, even if their execution time is the same (in this case, the behavior will be the same of Heuristics Miner).
 
