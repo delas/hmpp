@@ -11,7 +11,7 @@ To install this plugin the following steps are required:
 1. grab the latest version of the plugin from the above link;
 2. copy the file hmpp.jar inside the `lib/external/` folder of the current ProM 5.2 installation;
 3. replace the file `lib/framework/ProM.jar` with the one contained in the downloaded zip file (a small modification to the framework was required in order to run the plugin);
-4. add, at the end of the file mining.ini (in the root directory of the current ProM installation), a line with:
+4. add, at the end of the file `mining.ini` (in the root directory of the current ProM installation), a line with:
 ```ini
 B5=it.processmining.hmpp.HMPP
 ```
