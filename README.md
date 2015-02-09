@@ -1,4 +1,4 @@
-# HeuristicsMiner++
+# HeuristicsMiner++ [![Build Status](https://travis-ci.org/delas/hmpp.svg)](https://travis-ci.org/delas/hmpp)
 
 This [ProM 5.2](http://www.promtools.org/doku.php?id=prom52) plugin implements the HeuristicsMiner++ plugin.
 
